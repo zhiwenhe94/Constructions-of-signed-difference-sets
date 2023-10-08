@@ -1,0 +1,76 @@
+// verify Propsition 5.3 (2) in Case 1, please chose proper "p" and "n" in "FiniteField(p,n)".
+
+// generate some proper "q=4t^2+9", t is odd and q=p^n.
+
+A:={};
+for x in [2..100000] do 
+    a:=(x-9)/4; 
+    if IsSquare(a) and IsPrimePower(x) then A join:={x}; end if;
+end for;
+B:={IntegerRing()!((x-9)/4):x in A};
+C:={};
+for x in B do 
+    if IsOdd(x) then C join:={x};end if;
+end for;
+C;
+
+D:={4*x+9:x in C};
+D;
+
+// get D={ 13, 109, 1453, 3373, 3853, 4909, 6733, 9613, 12109, 13933, 20173, 28909,
+36109, 40813, 47533, 58573, 88813 }, they are all prime.
+
+
+F:=FiniteField(109,1);
+w:=PrimitiveElement(F);
+
+q:=109;
+e:=4;
+f:=IntegerRing()!((q-1)/e);
+C0:={w^(e*j):j in [0..f-1]};
+
+CC:={};
+for i in [0..e-1] do
+    Ci:={w^i*x:x in C0};
+    CC join:={Ci};
+end for;
+
+G:={x:x in F};
+G0:=G diff {0};
+
+
+for Ci in CC do 
+P:=G diff {0};
+P:=P diff Ci;
+N:=G diff P;
+
+Ct:=function(P,N);
+M1:={**};
+M2:={**};
+for x,y in P do
+   Include(~M1,x-y);
+end for;
+
+for x,y in N do
+   Include(~M1,x-y);
+end for;
+
+for x in P do 
+    for y in N do 
+        Include(~M2,x-y);
+        Include(~M2,y-x);
+    end for;
+end for;
+
+C:={};
+for x in G0 do 
+    C join:={Multiplicity(M1,x)-Multiplicity(M2,x)};
+end for;
+return C;
+end function;
+
+Cts:=Ct(P,N);
+
+if #Cts eq 1 then print "D=P-N is an SDS"; print "lambda=",Random(Cts);else print "D=P-N is not an SDS";end if;
+
+end for;
