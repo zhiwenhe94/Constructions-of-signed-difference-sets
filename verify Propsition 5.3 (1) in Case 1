@@ -1,0 +1,52 @@
+// verify Propsition 5.3 (1) in Case 1, please chose proper "p" and "n" in "FiniteField(p,n)".
+p:=3;
+n:=2;
+
+F:=FiniteField(p,n);
+w:=PrimitiveElement(F);
+
+q:=p^n;
+e:=4;
+f:=(q-1)/e;
+C0:={w^(e*j):j in [0..f-1]};
+
+CC:={};
+for i in [0..e-1] do
+    Ci:={w^i*x:x in C0};
+    CC join:={Ci};
+end for;
+
+G:={x:x in F};
+G0:=G diff {0};
+P:=G diff {0};
+N:=G diff P;
+
+Ct:=function(P,N);
+M1:={**};
+M2:={**};
+for x,y in P do
+   Include(~M1,x-y);
+end for;
+
+for x,y in N do
+   Include(~M1,x-y);
+end for;
+
+for x in P do 
+    for y in N do 
+        Include(~M2,x-y);
+        Include(~M2,y-x);
+    end for;
+end for;
+
+C:={};
+for x in G0 do 
+    C join:={Multiplicity(M1,x)-Multiplicity(M2,x)};
+end for;
+return C;
+end function;
+
+Cts:=Ct(P,N);
+
+if #Cts eq 1 then print "D=P-N is an SDS"; print "lambda=",Random(Cts);else print "D=P-N is not an SDS";end if;
+
