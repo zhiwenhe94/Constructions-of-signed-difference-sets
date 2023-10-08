@@ -1,0 +1,86 @@
+// verify Propsition 5.6 with (i-j) mod 4 eq 3 in Case 4, please chose proper "p" and "n" in "FiniteField(p,n)". Note that t is uniqurly defined by w^((q-1)/4)\equiv s/t mod p. N depends on the value of w.
+
+// generate some proper q such that "q\equiv 1\mod 4" and "f\equiv 3\mod 4" and "3s-4t=-1".
+
+A:={};
+
+for s in [0..2000] do 
+    if s mod 4 eq 1 then A join:={s^2+((1+3*s)/4)^2};end if;
+end for;
+
+B:={};
+
+for x in A do 
+    a:=IntegerRing()!x;
+    if IsPrimePower(a) and (a mod 4) eq 1 and Random(PrimeBasis(a)) mod 4 eq 1 then B join:={(a-1)/4}; end if;
+end for;
+
+C:={};
+for x in B do 
+    a:=IntegerRing()!x;
+    if a mod 4 eq 3 then C join:={4*a+1}; end if;
+end for;
+
+C;
+// get C={ 269, 3181, 9293, 46829, 87853, 100109, 141677, 157133, 430861, 457517, 914701,
+1033069, 1337261, 1383917, 1431373, 1629197, 1732909, 1949933, 2006189, 2239213,
+2299469, 2485037, 2548493, 2612749, 2810317, 2877773, 2946029, 3084941, 3155597,
+4394893, 4479149, 4736717, 5091341, 5181997, 5273453, 6033901 }, they are all primes.
+
+
+F:=FiniteField(3181,1);
+w:=PrimitiveElement(F);
+
+q:=3181;
+e:=4;
+f:=IntegerRing()!((q-1)/e);
+C0:={w^(e*j):j in [0..f-1]};
+
+CC:=[];
+for i in [0..e-1] do
+    Ci:={w^i*x:x in C0};
+    Include(~CC,Ci);
+end for;
+
+G:={x:x in F};
+G0:=G diff {0};
+
+
+for i,j in [1..4] do 
+   if (i-j) mod 4 eq 1 then 
+P:=CC[i];
+N:=G diff {F!0};
+N:=N diff CC[i];
+N:=N diff CC[j];
+
+Ct:=function(P,N);
+M1:={**};
+M2:={**};
+for x,y in P do
+   Include(~M1,x-y);
+end for;
+
+for x,y in N do
+   Include(~M1,x-y);
+end for;
+
+for x in P do 
+    for y in N do 
+        Include(~M2,x-y);
+        Include(~M2,y-x);
+    end for;
+end for;
+
+C:={};
+for x in G0 do 
+    C join:={Multiplicity(M1,x)-Multiplicity(M2,x)};
+end for;
+return C;
+end function;
+
+Cts:=Ct(P,N);
+
+if #Cts eq 1 then print "D=P-N is an SDS"; print "lambda=",Random(Cts);else print "D=P-N is not an SDS";end if;
+
+end if;
+end for;
