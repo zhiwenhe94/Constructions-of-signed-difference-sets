@@ -1,0 +1,79 @@
+// verify Propsition 5.5 (2) with (i-j) mod 4 eq 1 in Case 3, please chose proper "p" and "n" in "FiniteField(p,n)".
+
+// generate some proper q such that "q\equiv 1\mod 4" and "f\equiv 1\mod 4" and "i-j\equiv 1\mod 4" and "4t+3s=-5". Note that t is uniqurly defined by w^((q-1)/4)\equiv s/t mod p. N depends on the value of w.
+
+A:={};
+for s in [-3000..3000] do 
+    if (s mod 4) eq 1 then A join:={s^2+((-5-3*s)/4)^2}; end if;
+end for;
+A;
+
+B:={};
+for x in A do 
+    a:=IntegerRing()!x;
+    if IsPrimePower(a) and (a mod 4) eq 1 and Random(PrimeBasis(a)) mod 4 eq 1  then B join:={a}; end if;
+end for;
+
+B;
+
+// get B={ 5 }.
+
+
+F:=FiniteField(5,1);
+w:=PrimitiveElement(F);
+
+q:=5;
+e:=4;
+f:=IntegerRing()!((q-1)/e);
+C0:={w^(e*j):j in [0..f-1]};
+
+CC:=[];
+for i in [0..e-1] do
+    Ci:={w^i*x:x in C0};
+    Include(~CC,Ci);
+end for;
+
+G:={x:x in F};
+G0:=G diff {0};
+
+
+for i,j in [1..4] do 
+if (i-j) mod 4 eq 1 then 
+P:=G diff CC[i];
+P:=P diff CC[j];
+P:=P diff {F!0};
+N:=CC[i];
+N join:={F!0};
+
+Ct:=function(P,N);
+M1:={**};
+M2:={**};
+for x,y in P do
+   Include(~M1,x-y);
+end for;
+
+for x,y in N do
+   Include(~M1,x-y);
+end for;
+
+for x in P do 
+    for y in N do 
+        Include(~M2,x-y);
+        Include(~M2,y-x);
+    end for;
+end for;
+
+C:={};
+for x in G0 do 
+    C join:={Multiplicity(M1,x)-Multiplicity(M2,x)};
+end for;
+return C;
+end function;
+
+Cts:=Ct(P,N);
+
+if #Cts eq 1 then print "D=P-N is an SDS"; print "lambda=",Random(Cts);else print "D=P-N is not an SDS";end if;
+
+end if;
+end for;
+
